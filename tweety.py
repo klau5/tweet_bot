@@ -17,11 +17,11 @@ def limit_handler(cursor):
         time.sleep(1000)
 
 
-# # Auto-follow
-# for follower in limit_handler(tweepy.Cursor(api.followers).items()):
-#     if follower.name == 'username'  # follow one person at a time
-#     follower.follow()
-#     break
+# Auto-follow
+for follower in limit_handler(tweepy.Cursor(api.followers).items()):
+    if follower.name == 'username'  # follow one person at a time
+    follower.follow()
+    break
 
 ''' Favourite/retweet based on keyword
     apply limit_handler() if necessary
