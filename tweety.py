@@ -1,6 +1,7 @@
 import tweepy
 import time
 from keys import CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET
+from advice import advice_tweet
 
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
@@ -9,31 +10,41 @@ api = tweepy.API(auth)
 user = api.me()
 
 
-def limit_handler(cursor):
-    try:
-        while True:
-            yield cursor.next()
-    except tweepy.RateLimitError:
-        time.sleep(1000)
+# def limit_handler(cursor):
+#     try:
+#         while True:
+#             yield cursor.next()
+#     except tweepy.RateLimitError:
+#         time.sleep(1000)
 
+# post Tweet
+tweet = api.update_status(advice_tweet)
 
-# Auto-follow
-for follower in limit_handler(tweepy.Cursor(api.followers).items()):
-    # follow one person at a time
-    if follower.name == 'username':
-        follower.follow()
-    break
+def post_tweet():
+    tweet
 
-''' Favourite/retweet based on keyword
-    apply limit_handler() if necessary
-'''
-tweet_keyword = 'overwatch'  # enter keyword as string
-number_of_tweets = 5  # optional but should remain int
+if __name__ == '__tweepy__':
+    while True:
+        post_tweet()
+        time.sleep(30)
 
-for tweet in tweepy.Cursor(api.search, tweet_keyword).items(number_of_tweets):
-    try:
-        tweet.favorite()  # favorite can be substituted for retweet
-    except tweepy.TweepError as e:
-        print(e.reason)
-    except StopIteration:
-        break
+# # Auto-follow
+# for follower in limit_handler(tweepy.Cursor(api.followers).items()):
+#     # follow one person at a time
+#     if follower.name == 'username':
+#         follower.follow()
+#     break
+
+# ''' Favourite/retweet based on keyword
+#     apply limit_handler() if necessary
+# '''
+# tweet_keyword = 'overwatch'  # enter keyword as string
+# number_of_tweets = 5  # optional but should remain int
+
+# for tweet in tweepy.Cursor(api.search, tweet_keyword).items(number_of_tweets):
+#     try:
+#         tweet.favorite()  # favorite can be substituted for retweet
+#     except tweepy.TweepError as e:
+#         print(e.reason)
+#     except StopIteration:
+#         break
