@@ -1,50 +1,35 @@
 import tweepy
 import time
-from keys import CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET
-from advice import advice_tweet
+from keys import *
+import schedule
+import json
+import requests
 
+# Advice API
+req = requests.get('https://api.adviceslip.com/advice', timeout=10)
+data = json.loads(req.text)
+data == req.json()
+advice_tweet = data['slip']['advice']
+print(advice_tweet)
+
+# Tweepy API
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
-
 api = tweepy.API(auth)
 user = api.me()
 
-
-# def limit_handler(cursor):
-#     try:
-#         while True:
-#             yield cursor.next()
-#     except tweepy.RateLimitError:
-#         time.sleep(1000)
-
 # post Tweet
-tweet = api.update_status(advice_tweet)
+# tweet = api.update_status(advice_tweet)
 
 def post_tweet():
-    tweet
+    return advice_tweet
+print('\nReceived Quote\n')
+# print('\nTweet sent\n')
 
-if __name__ == '__tweepy__':
-    while True:
-        post_tweet()
-        time.sleep(30)
+schedule.every(10).seconds.do(post_tweet)
 
-# # Auto-follow
-# for follower in limit_handler(tweepy.Cursor(api.followers).items()):
-#     # follow one person at a time
-#     if follower.name == 'username':
-#         follower.follow()
-#     break
-
-# ''' Favourite/retweet based on keyword
-#     apply limit_handler() if necessary
-# '''
-# tweet_keyword = 'overwatch'  # enter keyword as string
-# number_of_tweets = 5  # optional but should remain int
-
-# for tweet in tweepy.Cursor(api.search, tweet_keyword).items(number_of_tweets):
-#     try:
-#         tweet.favorite()  # favorite can be substituted for retweet
-#     except tweepy.TweepError as e:
-#         print(e.reason)
-#     except StopIteration:
-#         break
+while 1:
+    t = time.ctime()
+    schedule.run_pending()
+    time.sleep(1)
+    print(f'Sleep Start {t}')
